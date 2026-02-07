@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { sessionDB } from '@/app/lib/database';
 import type { ProtectionLevel } from '@/app/lib/types';
 
+export const dynamic = 'force-dynamic';
+
 interface StartSessionRequest {
   userId: string;
   protectionLevel: ProtectionLevel;

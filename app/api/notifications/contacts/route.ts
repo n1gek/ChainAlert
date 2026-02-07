@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { userDB } from '@/app/lib/database';
 import type { Session } from '@/app/lib/types';
 
+export const dynamic = 'force-dynamic';
+
 interface ContactNotificationRequest {
   type: 'critical_alert' | 'legal_alert' | 'emergency';
   userId: string;

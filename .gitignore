@@ -48,3 +48,6 @@ service-account-key.json
 # Scripts build output
 scripts/dist/
 scripts/node_modules/
+
+.vercel
+.env*.local

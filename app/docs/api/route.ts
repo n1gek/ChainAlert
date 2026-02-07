@@ -2,6 +2,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { documentDB } from '@/app/lib/database';
 
+export const dynamic = 'force-dynamic';
+
 // GET - Fetch user's documents
 export async function GET(request: NextRequest) {
   try {
@@ -33,11 +35,24 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const userId = formData.get('userId') as string;
-    const type = formData.get('type') as string;
+    const typeValue = formData.get('type') as string;
     const category = formData.get('category') as string;
     const description = formData.get('description') as string;
-    const accessLevel = formData.get('accessLevel') as 'public' | 'contacts' | 'legal_only';
+    const accessLevelValue = formData.get('accessLevel') as string;
     const isEncrypted = formData.get('isEncrypted') === 'true';
+
+    // Validate document type
+    const validTypes = ['id', 'evidence', 'legal', 'medical', 'other'];
+    const type = validTypes.includes(typeValue) ? (typeValue as 'id' | 'evidence' | 'legal' | 'medical' | 'other') : 'other';
+
+    // Map access level to valid values
+    const accessLevelMap: { [key: string]: 'private' | 'shared' | 'public' } = {
+      'public': 'public',
+      'contacts': 'shared',
+      'legal_only': 'shared',
+      'private': 'private'
+    };
+    const accessLevel = accessLevelMap[accessLevelValue] || 'private';
 
     if (!file || !userId) {
       return NextResponse.json(
@@ -63,7 +78,9 @@ export async function POST(request: NextRequest) {
       isEncrypted,
       description,
       tags: [],
-      expirationDate: null
+      expirationDate: null,
+      status: 'pending',
+      verifiedAt: null
     });
 
     return NextResponse.json({

@@ -2,6 +2,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { userDB } from '@/app/lib/database';
 
+export const dynamic = 'force-dynamic';
+
 interface ContactRequest {
   contactId?: string;
   firstName: string;
@@ -69,7 +71,6 @@ export async function POST(request: NextRequest) {
     // Create user profile if it doesn't exist
     if (!userProfile) {
       await userDB.upsertUserProfile(userId, {
-        userId: userId,
         emergencyContacts: []
       });
       userProfile = await userDB.getUserProfile(userId);

@@ -4,6 +4,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { userDB } from '@/app/lib/database';
 import type { Session } from '@/app/lib/types';
 
+export const dynamic = 'force-dynamic';
+
 interface EmailRequest {
   type: 'soft_warning' | 'medium_alert' | 'critical_alert' | 'emergency';
   userId: string;

@@ -2,6 +2,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { consentDB, userDB } from '@/app/lib/database';
 
+export const dynamic = 'force-dynamic';
+
 interface ConsentRequest {
   userId: string;
   userName: string;
@@ -57,13 +59,19 @@ export async function POST(request: NextRequest) {
 
     // Create or update user profile with consent info
     await userDB.upsertUserProfile(userId, {
-      userId,
       fullName: userName,
       email: userEmail || '',
       phoneNumber: userPhone || '',
       preferences: {
         hasGivenConsent: true,
-        notificationsEnabled: true
+        notificationPreferences: {
+          email: true,
+          push: true,
+          sms: true
+        },
+        defaultProtectionLevel: 'custom',
+        escalationConfigId: 'default',
+        jurisdiction: 'US'
       }
     });
 
@@ -110,9 +118,16 @@ export async function DELETE(request: NextRequest) {
       
       // Update user preferences
       await userDB.upsertUserProfile(userId, {
-        userId,
         preferences: {
-          hasGivenConsent: false
+          hasGivenConsent: false,
+          notificationPreferences: {
+            email: true,
+            push: true,
+            sms: false
+          },
+          defaultProtectionLevel: 'work',
+          escalationConfigId: '',
+          jurisdiction: 'CA'
         }
       });
     }

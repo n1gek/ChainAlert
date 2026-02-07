@@ -1,5 +1,5 @@
 // Cloud Function: Audit Log Skeleton
-exports.auditLog = (req, res) => {
+exports.auditLog = (req: any, res: any) => {
   // Audit log logic here
   res.send('Audit logged');
 };

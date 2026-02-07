@@ -3,6 +3,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sessionDB, userDB } from '@/app/lib/database';
 
+export const dynamic = 'force-dynamic';
+
 interface EmergencyRequest {
   userId: string;
   sessionId: string;

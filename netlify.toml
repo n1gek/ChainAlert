@@ -1,9 +1,13 @@
 [build]
   command = "npm run build"
   publish = ".next"
+  functions = ".netlify/functions"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+  [plugins.inputs]
+    generateStaticPaths = true
 
 [build.environment]
+  NODE_VERSION = "18"
   NEXT_PRIVATE_STANDALONE = "true"

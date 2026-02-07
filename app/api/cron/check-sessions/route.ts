@@ -51,7 +51,8 @@ export async function GET(request: NextRequest) {
         soft_warning: 0,
         medium_alert: 0,
         critical_alert: 0,
-        legal_alert: 0
+        legal_alert: 0,
+        emergency: 0
       },
       errors: [] as string[]
     };

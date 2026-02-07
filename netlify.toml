@@ -5,8 +5,6 @@
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
-  [plugins.inputs]
-    generateStaticPaths = true
 
 [build.environment]
   NODE_VERSION = "18"

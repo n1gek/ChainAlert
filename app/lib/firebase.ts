@@ -15,15 +15,26 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID ?? "",
 };
 
-// Modular v9+
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
+// Check if we have valid Firebase config (skip during build if env vars not set)
+const isValidConfig = firebaseConfig.apiKey && firebaseConfig.projectId;
 
-// Compat version (for FirebaseUI)
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
+let app: any = null;
+let auth: any = null;
+let db: any = null;
+let storage: any = null;
+
+// Only initialize Firebase if we have valid credentials
+if (isValidConfig) {
+  // Modular v9+
+  app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+  auth = getAuth(app);
+  db = getFirestore(app);
+  storage = getStorage(app);
+
+  // Compat version (for FirebaseUI)
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
 }
 
 export { app, auth, db, storage, firebase };

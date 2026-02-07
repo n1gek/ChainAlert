@@ -1,0 +1,43 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function to check if user owns the resource
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // Documents folder: Users can only access their own documents
+    match /documents/{userId}/{fileName} {
+      // Allow read if user owns the document
+      allow read: if isAuthenticated() && isOwner(userId);
+      
+      // Allow write/create if user owns the folder
+      allow write, create: if isAuthenticated() && isOwner(userId);
+      
+      // Allow delete if user owns the document
+      allow delete: if isAuthenticated() && isOwner(userId);
+    }
+
+    // Profile photos
+    match /profile_photos/{userId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write, create, delete: if isAuthenticated() && isOwner(userId);
+    }
+
+    // Shared documents (accessible by emergency contacts during escalation)
+    match /shared/{userId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write, create, delete: if isAuthenticated() && isOwner(userId);
+    }
+
+    // Default: deny all
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

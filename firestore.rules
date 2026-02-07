@@ -1,0 +1,225 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    function hasVerifiedEmail() {
+      return isAuthenticated() && request.auth.token.email_verified == true;
+    }
+    
+    // Users Collection
+    match /users/{userId} {
+      // Users can read their own profile and admins can read any
+      allow read: if isOwner(userId) || isAdmin();
+      
+      // Users can create their own profile on signup
+      allow create: if isOwner(userId) && 
+                      request.resource.data.id == userId &&
+                      request.resource.data.createdAt is timestamp;
+      
+      // Users can update their own profile (except sensitive fields)
+      allow update: if isOwner(userId) &&
+                      request.resource.data.id == userId &&
+                      !request.resource.data.diff(resource.data).affectedKeys().hasAny(['createdAt', 'id']);
+      
+      // Users can delete their own profile
+      allow delete: if isOwner(userId) || isAdmin();
+      
+      // Emergency Contacts Subcollection
+      match /emergencyContacts/{contactId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && 
+                        request.resource.data.userId == userId;
+        allow update, delete: if isOwner(userId);
+      }
+      
+      // User Settings Subcollection
+      match /settings/{settingId} {
+        allow read, write: if isOwner(userId);
+      }
+      
+      // Notification Preferences Subcollection
+      match /notificationPreferences/{prefId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+    
+    // Sessions Collection
+    match /sessions/{sessionId} {
+      // Users can read their own sessions
+      allow read: if isAuthenticated() && 
+                    (resource.data.userId == request.auth.uid || isAdmin());
+      
+      // Users can create sessions
+      allow create: if isAuthenticated() && 
+                      request.resource.data.userId == request.auth.uid &&
+                      request.resource.data.status == 'active' &&
+                      request.resource.data.createdAt is timestamp;
+      
+      // Users can update their own sessions
+      allow update: if isAuthenticated() && 
+                      resource.data.userId == request.auth.uid &&
+                      request.resource.data.userId == resource.data.userId;
+      
+      // Users and admins can delete sessions
+      allow delete: if isAuthenticated() && 
+                      (resource.data.userId == request.auth.uid || isAdmin());
+      
+      // Check-ins Subcollection
+      match /checkIns/{checkInId} {
+        allow read: if isAuthenticated() && 
+                      get(/databases/$(database)/documents/sessions/$(sessionId)).data.userId == request.auth.uid;
+        allow create: if isAuthenticated() && 
+                        get(/databases/$(database)/documents/sessions/$(sessionId)).data.userId == request.auth.uid;
+        allow update, delete: if isAuthenticated() && 
+                                get(/databases/$(database)/documents/sessions/$(sessionId)).data.userId == request.auth.uid;
+      }
+    }
+    
+    // Consents Collection
+    match /consents/{consentId} {
+      // Users can read their own consents
+      allow read: if isAuthenticated() && 
+                    (resource.data.userId == request.auth.uid || isAdmin());
+      
+      // Users can create consent records
+      allow create: if isAuthenticated() && 
+                      request.resource.data.userId == request.auth.uid &&
+                      request.resource.data.acceptedAt is timestamp &&
+                      hasVerifiedEmail();
+      
+      // Consents can be updated to revoke
+      allow update: if isAuthenticated() && 
+                      resource.data.userId == request.auth.uid &&
+                      request.resource.data.userId == resource.data.userId;
+      
+      // Only admins can delete consent records (compliance)
+      allow delete: if isAdmin();
+    }
+    
+    // Consent Templates Collection (Read-only for users)
+    match /consentTemplates/{templateId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+    
+    // Documents Collection
+    match /documents/{documentId} {
+      // Users can read their own documents or shared documents
+      allow read: if isAuthenticated() && 
+                    (resource.data.userId == request.auth.uid || 
+                     request.auth.uid in resource.data.get('sharedWith', []) ||
+                     isAdmin());
+      
+      // Users can create documents
+      allow create: if isAuthenticated() && 
+                      request.resource.data.userId == request.auth.uid &&
+                      request.resource.data.uploadedAt is timestamp;
+      
+      // Users can update their own documents
+      allow update: if isAuthenticated() && 
+                      resource.data.userId == request.auth.uid;
+      
+      // Users can delete their own documents
+      allow delete: if isAuthenticated() && 
+                      (resource.data.userId == request.auth.uid || isAdmin());
+      
+      // Document Shares Subcollection
+      match /shares/{shareId} {
+        allow read: if isAuthenticated() && 
+                      (get(/databases/$(database)/documents/documents/$(documentId)).data.userId == request.auth.uid ||
+                       resource.data.sharedWith == request.auth.uid);
+        allow create: if isAuthenticated() && 
+                        get(/databases/$(database)/documents/documents/$(documentId)).data.userId == request.auth.uid;
+        allow update, delete: if isAuthenticated() && 
+                                get(/databases/$(database)/documents/documents/$(documentId)).data.userId == request.auth.uid;
+      }
+    }
+    
+    // Audit Logs Collection (Write by system, read by user/admin)
+    match /auditLogs/{logId} {
+      // Users can read their own audit logs
+      allow read: if isAuthenticated() && 
+                    (resource.data.userId == request.auth.uid || isAdmin());
+      
+      // Only cloud functions can write audit logs
+      allow create: if request.auth.token.admin == true || request.auth == null;
+      
+      // Audit logs should not be updated or deleted (compliance)
+      allow update, delete: if false;
+    }
+    
+    // Escalations Collection
+    match /escalations/{escalationId} {
+      // Users can read their own escalations
+      allow read: if isAuthenticated() && 
+                    (resource.data.userId == request.auth.uid || 
+                     isAdmin());
+      
+      // Only system/cloud functions can create escalations
+      allow create: if isAuthenticated() && 
+                      (request.resource.data.userId == request.auth.uid ||
+                       request.auth.token.admin == true);
+      
+      // Users and system can update escalations
+      allow update: if isAuthenticated() && 
+                      (resource.data.userId == request.auth.uid ||
+                       request.auth.token.admin == true);
+      
+      // Only admins can delete escalations (compliance)
+      allow delete: if isAdmin();
+    }
+    
+    // Escalation Configurations Collection
+    match /escalationConfigs/{configId} {
+      allow read, write: if isAuthenticated() && configId == request.auth.uid;
+    }
+    
+    // Notifications Collection
+    match /notifications/{notificationId} {
+      // Users can read their own notifications
+      allow read: if isAuthenticated() && 
+                    resource.data.userId == request.auth.uid;
+      
+      // System can create notifications
+      allow create: if isAuthenticated();
+      
+      // Users can update notification status (mark as read)
+      allow update: if isAuthenticated() && 
+                      resource.data.userId == request.auth.uid &&
+                      request.resource.data.userId == resource.data.userId;
+      
+      // Users can delete their own notifications
+      allow delete: if isAuthenticated() && 
+                      (resource.data.userId == request.auth.uid || isAdmin());
+    }
+    
+    // Session Statistics Collection
+    match /sessionStats/{userId} {
+      allow read: if isAuthenticated() && 
+                    (userId == request.auth.uid || isAdmin());
+      
+      // Only cloud functions can write stats
+      allow write: if request.auth.token.admin == true;
+    }
+    
+    // Jurisdictions Collection (Public read, admin write)
+    match /jurisdictions/{jurisdictionId} {
+      allow read: if true; // Public resource data
+      allow write: if isAdmin();
+    }
+  }
+}

@@ -14,7 +14,6 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID ?? "",
 };
 
-// Check if we have valid Firebase config (skip during build if env vars not set)
 const isValidConfig = firebaseConfig.apiKey && firebaseConfig.projectId;
 
 let app: any = null;

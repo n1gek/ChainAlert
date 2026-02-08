@@ -51,7 +51,7 @@ export function getUserLocation(): Promise<LocationData> {
       {
         enableHighAccuracy: true, // GPS if available
         timeout: 10000, // 10 seconds max wait
-        maximumAge: 0 // Don't use cached location
+        maximumAge: 0 
       }
     );
   });
@@ -145,9 +145,7 @@ export function formatLocationForStorage(location: LocationData, address?: Addre
   };
 }
 
-/**
- * Check if geolocation is available in the browser
- */
+
 export function isGeolocationAvailable(): boolean {
   return 'geolocation' in navigator;
 }

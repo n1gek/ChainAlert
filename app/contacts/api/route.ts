@@ -128,7 +128,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// DELETE - Delete contact
 export async function DELETE(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
@@ -142,10 +141,8 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // Get current contacts
     const userProfile = await userDB.getUserProfile(userId);
     
-    // If no profile exists, nothing to delete
     if (!userProfile) {
       return NextResponse.json({
         success: true,
@@ -153,12 +150,10 @@ export async function DELETE(request: NextRequest) {
       });
     }
 
-    // Remove contact
     const updatedContacts = (userProfile.emergencyContacts || []).filter(
       (c: any) => c.contactId !== contactId
     );
 
-    // Update in database
     await userDB.updateEmergencyContacts(userId, updatedContacts);
 
     return NextResponse.json({

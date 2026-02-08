@@ -107,29 +107,20 @@ export default function HomePage() {
   }, [activeSession, isActive]);
 
   const loadUserData = async (userId: string) => {
-      console.log('Loading user data for:', userId);
-      
-      // Clean up existing listener
+    try {
       if (sessionUnsubscribe) {
         sessionUnsubscribe();
         setSessionUnsubscribe(null);
       }
-      
-      // Load active sessions
+
       const sessions = await sessionDB.getActiveSessions(userId);
-      console.log('Active sessions found:', sessions.length);
-      
+
       if (sessions.length > 0) {
         const session = sessions[0];
-        console.log('Setting active session:', session.sessionId);
-        
-        // Set initial state
         setActiveSession(session);
         setIsActive(true);
         setCheckIns(session.stats.totalCheckIns);
         setSelectedDuration(session.protectionLevel);
-        
-        // Calculate initial timer
         const nextCheckIn = session.nextCheckInDue?.toMillis() || 0;
         const now = Date.now();
         const msRemaining = Math.max(0, nextCheckIn - now);

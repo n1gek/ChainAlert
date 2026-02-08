@@ -6,7 +6,6 @@ export async function testFirebaseConnection(): Promise<boolean> {
   try {
     console.log('Testing Firebase connection...');
     
-    // Try to read from a collection (even if empty)
     const testRef = collection(db, 'sessions');
     await getDocs(testRef);
     

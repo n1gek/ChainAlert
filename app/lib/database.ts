@@ -317,7 +317,7 @@ export const sessionDB = {
     return checkIn;
   },
 
-    async create((userId: string): Promise<Session[]> {
+  async getActiveSessions(userId: string): Promise<Session[]> {
     const sessionsRef = collection(db, 'sessions');
     const q = query(
       sessionsRef,
@@ -327,11 +327,9 @@ export const sessionDB = {
     
     const snapshot = await getDocs(q);
     const sessions = snapshot.docs.map(doc => doc.data() as Session);
-    // Sort by nextCheckInDue client-side
     return sessions.sort((a, b) => a.nextCheckInDue.seconds - b.nextCheckInDue.seconds);
   },
 
-  // End a session
   async endSession(sessionId: string, reason: 'completed' | 'cancelled' | 'emergency' = 'completed') {
     try {
       const sessionRef = doc(db, 'sessions', sessionId);
@@ -339,7 +337,7 @@ export const sessionDB = {
       
       if (!sessionSnap.exists()) {
         console.warn(`Session ${sessionId} not found in database - may have already been ended or never created`);
-        return; // Return gracefully instead of throwing
+        return;
       }
       
       const session = sessionSnap.data() as Session;
@@ -351,7 +349,6 @@ export const sessionDB = {
         updatedAt: now
       });
       
-      // Log the session end
       await auditLogDB.create({
         userId: session.userId,
         action: 'session_ended',
@@ -367,7 +364,6 @@ export const sessionDB = {
     }
   },
 
-  // Get session by ID
   async getSession(sessionId: string): Promise<Session | null> {
     const sessionRef = doc(db, 'sessions', sessionId);
     const sessionSnap = await getDoc(sessionRef);
@@ -376,7 +372,6 @@ export const sessionDB = {
 };
 
 export const consentDB = {
-  // Record user consent
   async recordConsent(userId: string, templateId: string, version: string): Promise<string> {
     const consentId = `${userId}_${Date.now()}`;
     const consentRef = doc(db, 'consents', consentId);

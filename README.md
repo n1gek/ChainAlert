@@ -5,7 +5,7 @@
 **ChainAlert** is a **silent personal safety escalation system** designed to protect individuals during high‑risk situations such as ICE encounters, detainment, or emergencies.  
 Once activated, ChainAlert works quietly in the background and **automatically escalates alerts** if the user cannot check in.
 
-🔗 **Live App:** <https://alert-pi.vercel.app/home>
+🔗 **Live App:** <https://alert-pi.vercel.app>
 
 ***
 

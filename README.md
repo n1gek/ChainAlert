@@ -94,9 +94,6 @@ The home dashboard shows:
 ## 🧪 Use Cases
 
 *   Immigration or ICE encounters
-*   Protests or civil demonstrations
-*   Late‑night travel
-*   Domestic safety planning
 *   Journalists or activists in high‑risk areas
 
 ***

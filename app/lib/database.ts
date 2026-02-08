@@ -187,9 +187,11 @@ export const sessionDB = {
         lng: sessionData.location?.longitude || 0,
         address: addressString,
         timestamp: now,
-        // Store extended address data
+        // Store extended address data, filtering out undefined values
         ...(sessionData.location?.address && {
-          addressData: sessionData.location.address
+          addressData: Object.fromEntries(
+            Object.entries(sessionData.location.address).filter(([_, v]) => v !== undefined)
+          )
         }),
         ...(sessionData.location?.accuracy && {
           accuracy: sessionData.location.accuracy
@@ -213,7 +215,9 @@ export const sessionDB = {
         location: sessionData.location ? {
           latitude: sessionData.location.latitude,
           longitude: sessionData.location.longitude,
-          address: sessionData.location.address
+          address: sessionData.location.address ? Object.fromEntries(
+            Object.entries(sessionData.location.address).filter(([_, v]) => v !== undefined)
+          ) : undefined
         } : null
       },
       ipAddress: '',
@@ -271,7 +275,9 @@ export const sessionDB = {
         lng: checkInData.location.longitude,
         address: addressString,
         timestamp: now,
-        ...(addr && { addressData: addr }),
+        ...(addr && { addressData: Object.fromEntries(
+          Object.entries(addr).filter(([_, v]) => v !== undefined)
+        ) }),
         ...(checkInData.location.accuracy && { accuracy: checkInData.location.accuracy })
       } as any;
     }

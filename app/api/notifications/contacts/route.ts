@@ -29,7 +29,6 @@ export async function POST(request: NextRequest) {
       }, { status: 503 });
     }
 
-    // Get user profile with contacts
     const userProfile = await userDB.getUserProfile(userId);
     if (!userProfile) {
       throw new Error('User profile not found');

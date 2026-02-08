@@ -5,22 +5,19 @@ import type { Session } from './types';
 export type EscalationPhase = 'soft_warning' | 'medium_alert' | 'critical_alert' | 'legal_alert' | 'emergency';
 
 export interface EscalationConfig {
-  softWarningMinutes: number;     // Phase 1: 0-15 min (in-app)
-  mediumAlertMinutes: number;     // Phase 2: 15-60 min (email to user)
-  criticalAlertMinutes: number;   // Phase 3: 60 min (emergency contacts)
-  legalAlertMinutes: number;      // Phase 4: 1440 min / 24 hours (legal services)
+  softWarningMinutes: number;
+  mediumAlertMinutes: number;
+  criticalAlertMinutes: number;
+  legalAlertMinutes: number;
 }
 
 export const DEFAULT_ESCALATION_CONFIG: EscalationConfig = {
   softWarningMinutes: 0,
   mediumAlertMinutes: 15,
   criticalAlertMinutes: 60,
-  legalAlertMinutes: 1440  // 24 hours
+  legalAlertMinutes: 1440
 };
 
-/**
- * Calculate which escalation phase a session should be in based on time elapsed
- */
 export function calculateEscalationPhase(session: Session): EscalationPhase | null {
   if (session.status !== 'active') {
     return null;

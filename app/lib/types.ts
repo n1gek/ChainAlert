@@ -1,7 +1,7 @@
 // Type definitions for database operations
 import { Timestamp } from 'firebase/firestore';
 
-// ==================== USER TYPES ====================
+
 export type UserProfile = {
   uid: string;
   email: string;
@@ -61,7 +61,7 @@ export type UserStats = {
   avgResponseTime: number;
 };
 
-// ==================== SESSION TYPES ====================
+
 export type ProtectionLevel = 
   | 'short' 
   | 'work' 
@@ -115,7 +115,7 @@ export type LocationData = {
   timestamp: Timestamp;
 };
 
-// ==================== CONSENT TYPES ====================
+
 export type ConsentRecord = {
   consentId: string;
   userId: string;
@@ -140,7 +140,7 @@ export type ConsentTemplate = {
   isActive: boolean;
 };
 
-// ==================== DOCUMENT TYPES ====================
+
 export type DocumentMetadata = {
   documentId: string;
   userId: string;
@@ -160,7 +160,7 @@ export type DocumentMetadata = {
   expirationDate: Timestamp | null;
 };
 
-// ==================== ESCALATION TYPES ====================
+
 export type Escalation = {
   escalationId: string;
   sessionId: string;
@@ -199,7 +199,7 @@ export type StageConfig = {
   message?: string;
 };
 
-// ==================== NOTIFICATION TYPES ====================
+
 export type Notification = {
   notificationId: string;
   userId: string;
@@ -236,7 +236,7 @@ export type NotificationRecord = {
   error?: string;
 };
 
-// ==================== JURISDICTION TYPES ====================
+
 export type Jurisdiction = {
   stateCode: string;
   name: string;
@@ -264,7 +264,7 @@ export type Resource = {
   availability?: string;
 };
 
-// ==================== AUDIT LOG TYPES ====================
+
 export type AuditLog = {
   logId: string;
   userId: string;

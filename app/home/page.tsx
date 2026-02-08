@@ -1,4 +1,3 @@
-// app/home/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -41,7 +40,6 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [sessionUnsubscribe, setSessionUnsubscribe] = useState<(() => void) | null>(null);
 
-  // Location hook for tracking user location
   const { 
     location, 
     address, 
@@ -51,7 +49,6 @@ export default function HomePage() {
     requestLocationWithAddress 
   } = useLocation(true);
 
-  // Request location with address on mount
   useEffect(() => {
     if (location && !address && !locationLoading) {
       requestLocationWithAddress();
@@ -59,14 +56,11 @@ export default function HomePage() {
   }, [location, address, locationLoading, requestLocationWithAddress]);
 
   useEffect(() => {
-  // 'auth' is already imported from "@/lib/firebase"
   const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
     if (!currentUser) {
       router.replace("/");
     } else {
       setUser(currentUser);
-      
-      // Test Firebase connection
       const isConnected = await testFirebaseConnection();
       if (!isConnected) {
         alert('Warning: Firebase connection failed. Please check your configuration.');
@@ -79,21 +73,18 @@ export default function HomePage() {
 
   return () => {
     unsubscribe();
-    // Clean up session listener when component unmounts
     if (sessionUnsubscribe) {
       sessionUnsubscribe();
     }
   };
   }, [router, sessionUnsubscribe]);
 
-  // Timer countdown effect
   useEffect(() => {
     if (!activeSession || !isActive) {
       setDetentionTimer(0);
       return;
     }
 
-    // Update timer every second
     const interval = setInterval(() => {
       if (!activeSession.nextCheckInDue) {
         setDetentionTimer(0);
@@ -106,19 +97,16 @@ export default function HomePage() {
       const minutesRemaining = Math.floor(msRemaining / 60000);
       
       setDetentionTimer(minutesRemaining);
-      
-      // If timer expired, stop the interval
       if (msRemaining === 0) {
         clearInterval(interval);
         console.log('Timer expired - escalation should be triggered by Cloud Function');
       }
-    }, 1000); // Update every second
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [activeSession, isActive]);
 
   const loadUserData = async (userId: string) => {
-    try {
       console.log('Loading user data for:', userId);
       
       // Clean up existing listener
@@ -743,20 +731,25 @@ export default function HomePage() {
 
         {/* Footer */}
         <div className="mt-12 pt-8 border-t border-gray-200">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="text-gray-600 mb-4 md:mb-0">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div className="text-gray-600 flex-1">
               <p className="font-semibold">Remember your rights:</p>
               <p className="text-sm">You have the right to remain silent. You have the right to an attorney.</p>
             </div>
-            <div className="flex space-x-4">
-              <button className="flex items-center text-gray-600 hover:text-gray-900">
+            <div className="flex flex-col gap-2">
+              <p className="font-semibold text-gray-900 text-sm">Volunteer Organizations:</p>
+              <a href="tel:(212)549-2500" className="flex items-center text-gray-600 hover:text-gray-900 text-sm">
                 <Phone className="w-4 h-4 mr-2" />
-                Emergency Hotline
-              </button>
-              <button className="flex items-center text-gray-600 hover:text-gray-900">
-                <Mail className="w-4 h-4 mr-2" />
-                Contact Support
-              </button>
+                ACLU: (212) 549-2500
+              </a>
+              <a href="tel:(202)709-0505" className="flex items-center text-gray-600 hover:text-gray-900 text-sm">
+                <Phone className="w-4 h-4 mr-2" />
+                United We Dream: (202) 709-0505
+              </a>
+              <a href="tel:1-888-509-1239" className="flex items-center text-gray-600 hover:text-gray-900 text-sm">
+                <Phone className="w-4 h-4 mr-2" />
+                Immigration Advocates: 1-888-509-1239
+              </a>
             </div>
           </div>
         </div>

@@ -1,4 +1,3 @@
-// Geolocation utilities for tracking user location
 export interface LocationData {
   latitude: number;
   longitude: number;
@@ -18,10 +17,6 @@ export interface AddressData {
   fullAddress: string;
 }
 
-/**
- * Get user's current location using browser's Geolocation API
- * @returns Promise with location data
- */
 export function getUserLocation(): Promise<LocationData> {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) {
@@ -34,7 +29,7 @@ export function getUserLocation(): Promise<LocationData> {
         resolve({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
-          accuracy: position.coords.accuracy, // meters
+          accuracy: position.coords.accuracy,
           timestamp: new Date(position.timestamp)
         });
       },

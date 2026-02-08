@@ -1,5 +1,3 @@
-// lib/stateResources.ts
-
 export interface StateResource {
   name: string;
   hotline: string;

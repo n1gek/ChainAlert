@@ -109,7 +109,6 @@ export default function DocumentsPage() {
     isEncrypted: true
   });
 
-  // Load documents on mount
   useEffect(() => {
     if (user) {
       loadDocuments();
@@ -176,7 +175,6 @@ export default function DocumentsPage() {
     setShowUploadForm(true);
   };
 
-  // Get list of missing required documents
   const getMissingDocuments = () => {
     const missing: Array<{category: string, docName: string}> = [];
     
@@ -194,7 +192,6 @@ export default function DocumentsPage() {
     return missing;
   };
 
-  // Get human-readable document type name
   const getDocumentTypeName = (type: string, categoryId: string): string => {
     const category = requiredDocuments[type as keyof typeof requiredDocuments];
     if (!category) return categoryId;
@@ -236,10 +233,7 @@ export default function DocumentsPage() {
       const data = await response.json();
 
       if (response.ok) {
-        // Reload documents from database
         await loadDocuments();
-        
-        // Reset form
         setNewDocument({
           type: 'identification',
           category: '',
@@ -248,8 +242,6 @@ export default function DocumentsPage() {
           isEncrypted: true
         });
         setShowUploadForm(false);
-        
-        if (fileInputRef.current) fileInputRef.current.value = '';
         
         alert('Document uploaded successfully!');
       } else {

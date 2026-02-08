@@ -1,4 +1,3 @@
-// lib/database.ts
 import { 
   collection, 
   doc, 
@@ -37,9 +36,7 @@ import type {
   ProtectionLevel
 } from './types';
 
-// ==================== USER OPERATIONS ====================
 export const userDB = {
-  // Create or update user profile
   async upsertUserProfile(userId: string, data: Partial<UserProfile>) {
     const userRef = doc(db, 'users', userId);
     const userData: UserProfile = {
@@ -86,7 +83,6 @@ export const userDB = {
     return userSnap.exists() ? userSnap.data() as UserProfile : null;
   },
 
-  // Update emergency contacts
   async updateEmergencyContacts(userId: string, contacts: EmergencyContact[]) {
     const userRef = doc(db, 'users', userId);
     await updateDoc(userRef, {
@@ -95,7 +91,6 @@ export const userDB = {
     });
   },
 
-  // Add single emergency contact
   async addEmergencyContact(userId: string, contact: EmergencyContact) {
     const userRef = doc(db, 'users', userId);
     const userSnap = await getDoc(userRef);
@@ -119,9 +114,7 @@ export const userDB = {
   }
 };
 
-// ==================== SESSION OPERATIONS ====================
 export const sessionDB = {
-  // Start a new protection session
   async startSession(userId: string, sessionData: {
     protectionLevel: ProtectionLevel;
     destination?: string;
@@ -203,7 +196,6 @@ export const sessionDB = {
     
     await setDoc(sessionRef, session);
     
-    // Log the session start
     await auditLogDB.create({
       userId,
       action: 'session_started',
@@ -227,7 +219,6 @@ export const sessionDB = {
     return sessionId;
   },
 
-  // Record a check-in
   async recordCheckIn(sessionId: string, checkInData: Partial<Omit<CheckIn, 'location'>> & {
     location?: {
       latitude: number;
@@ -326,8 +317,7 @@ export const sessionDB = {
     return checkIn;
   },
 
-  // Get active sessions for a user
-  async getActiveSessions(userId: string): Promise<Session[]> {
+    async create((userId: string): Promise<Session[]> {
     const sessionsRef = collection(db, 'sessions');
     const q = query(
       sessionsRef,
@@ -385,7 +375,6 @@ export const sessionDB = {
   }
 };
 
-// ==================== CONSENT OPERATIONS ====================
 export const consentDB = {
   // Record user consent
   async recordConsent(userId: string, templateId: string, version: string): Promise<string> {
@@ -460,7 +449,6 @@ export const consentDB = {
   }
 };
 
-// ==================== DOCUMENT OPERATIONS ====================
 export const documentDB = {
   // Add document metadata
   async addDocument(userId: string, documentData: Omit<DocumentMetadata, 'documentId' | 'userId' | 'uploadedAt'>): Promise<string> {
@@ -549,7 +537,6 @@ export const documentDB = {
   }
 };
 
-// ==================== ESCALATION OPERATIONS ====================
 export const escalationDB = {
   // Trigger an escalation
   async triggerEscalation(sessionId: string, reason: 'missed_checkin' | 'emergency_button' | 'manual'): Promise<string> {
@@ -659,7 +646,6 @@ export const escalationDB = {
   }
 };
 
-// ==================== JURISDICTION OPERATIONS ====================
 export const jurisdictionDB = {
   // Get jurisdiction by state code
   async getJurisdiction(stateCode: string): Promise<Jurisdiction | null> {
@@ -686,7 +672,6 @@ export const jurisdictionDB = {
   }
 };
 
-// ==================== NOTIFICATION OPERATIONS ====================
 export const notificationDB = {
   // Create notification
   async createNotification(userId: string, notificationData: Omit<Notification, 'notificationId' | 'userId' | 'createdAt' | 'readAt'>): Promise<string> {
@@ -734,7 +719,6 @@ export const notificationDB = {
   }
 };
 
-// ==================== AUDIT LOG OPERATIONS ====================
 export const auditLogDB = {
   // Create audit log
   async create(logData: Omit<AuditLog, 'logId' | 'timestamp'>): Promise<string> {

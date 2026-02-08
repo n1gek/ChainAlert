@@ -1,4 +1,3 @@
-// React hook for geolocation
 import { useState, useEffect, useCallback } from 'react';
 import { 
   getUserLocation, 

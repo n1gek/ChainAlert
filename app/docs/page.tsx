@@ -368,14 +368,14 @@ export default function DocumentsPage() {
                       className={`w-full flex items-center p-3 rounded-lg transition ${
                         selectedCategory === cat.id
                           ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                          : 'hover:bg-gray-50'
+                          : 'text-gray-900 hover:bg-gray-50'
                       }`}
                     >
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${cat.color}`}>
                         <Icon className="w-4 h-4" />
                       </div>
                       <span className="font-medium">{cat.name}</span>
-                      <span className="ml-auto text-sm text-gray-500">
+                      <span className="ml-auto text-sm text-gray-700">
                         {documents.filter(d => cat.id === 'all' || d.type === cat.id).length}
                       </span>
                     </button>

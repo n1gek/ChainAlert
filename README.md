@@ -101,15 +101,14 @@ The home dashboard shows:
 
 ***
 
-## 🧰 Tech Stack *(update if needed)*
+## 🧰 Tech Stack
 
-> *(Edit this section to match your actual implementation)*
 
 *   **Frontend:** Next.js / React / Tailwind CSS
 *   **Backend:** API Routes / Serverless Functions
-*   **Auth:** (e.g. Clerk / Firebase / Auth.js)
+*   **Auth:** (e.g. Firebase)
 *   **Deployment:** Vercel
-*   **Database:** (e.g. PostgreSQL / Supabase / Firebase)
+*   **Database:** Firebase)
 
 ***
 
@@ -117,7 +116,7 @@ The home dashboard shows:
 
 ```bash
 # Clone the repo
-git clone https://github.com/your-username/chainalert.git
+git clone https://github.com/n1gek/chainalert.git
 
 # Install dependencies
 npm install

@@ -547,10 +547,6 @@ export default function HomePage() {
               <h3 className="font-bold text-gray-900 mb-4">Protection Stats</h3>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-900">Active Days</span>
-                  <span className="font-bold text-blue-600">7</span>
-                </div>
-                <div className="flex justify-between items-center">
                   <span className="text-gray-600">Successful Check-ins</span>
                   <span className="font-bold text-blue-600">{checkIns}</span>
                 </div>
